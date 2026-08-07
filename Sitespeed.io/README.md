@@ -36,14 +36,14 @@ Workflow: `.github/workflows/sitespeed.yml`
 - Runs every Monday at 09:00 UTC
 - Can also be started manually (`workflow_dispatch`)
 - Uploads each run’s HTML report as a unique workflow artifact (`sitespeed-result-<run_id>`, kept **14 days**)
-- Deploys each run to its own GitHub Pages folder on `gh-pages`
+- Deploys each run to `gh-pages` under `sitespeed/<run_id>/`
 
 ### GitHub Pages
 
 1. In the repo: **Settings → Pages → Build and deployment → Source** → **Deploy from a branch**.
 2. Branch: `gh-pages` / `/ (root)`.
 3. After a successful run, the report is at:
-   `https://<owner>.github.io/<repo>/runs/<run_id>/`
+   `https://<owner>.github.io/<repo>/sitespeed/<run_id>/`
 
 The URL is also printed in the workflow logs.
 
