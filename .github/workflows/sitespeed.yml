@@ -38,12 +38,20 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
+      # .nojekyll must live at the gh-pages root so GitHub does not run Jekyll
+      # (Jekyll strips sitespeed folders that start with _).
+      - name: Prepare Pages folder
+        run: |
+          mkdir -p "pages/sitespeed/${{ github.run_id }}"
+          cp -R sitespeed-result/. "pages/sitespeed/${{ github.run_id }}/"
+          touch pages/.nojekyll
+
       - name: Deploy report to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: sitespeed-result
-          target-folder: sitespeed/${{ github.run_id }}
+          folder: pages
           branch: gh-pages
+          clean: false
 
       - name: Echo report URL
         run: |

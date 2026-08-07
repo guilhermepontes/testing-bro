@@ -47,6 +47,9 @@ Workflow: `.github/workflows/sitespeed.yml`
 
 The URL is also printed in the workflow logs.
 
+A root `.nojekyll` is published so GitHub does not run Jekyll (which would
+break the sitespeed report).
+
 ### Required secrets
 
 Secrets and vars live on the **`prd`** GitHub Environment (used by the `sitespeed` job).
