@@ -1,0 +1,70 @@
+name: Sitespeed.io weekly
+
+on:
+  schedule:
+    # Mondays at 09:00 UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  sitespeed:
+    runs-on: ubuntu-latest
+    environment: prd
+    timeout-minutes: 45
+    outputs:
+      has_report: ${{ steps.report.outputs.exists }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run sitespeed.io
+        env:
+          MEASUREMENT_EMAIL: ${{ secrets.MEASUREMENT_EMAIL }}
+          MEASUREMENT_PASSWORD: ${{ secrets.MEASUREMENT_PASSWORD }}
+        run: bash Sitespeed.io/run.sh
+
+      - name: Check report exists
+        if: always()
+        id: report
+        run: |
+          if [ -d sitespeed-result ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload HTML report artifact
+        if: always() && steps.report.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitespeed-result-${{ github.run_id }}
+          path: sitespeed-result
+          retention-days: 30
+
+      - name: Upload Pages artifact
+        if: always() && steps.report.outputs.exists == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: sitespeed-result
+
+  deploy:
+    needs: sitespeed
+    if: always() && needs.sitespeed.result != 'cancelled' && needs.sitespeed.outputs.has_report == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
