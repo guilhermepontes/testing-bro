@@ -18,16 +18,30 @@ Requires Docker.
 export MEASUREMENT_EMAIL=you@example.com
 export MEASUREMENT_PASSWORD=your-password
 
-# Optional: ship metrics / notify
-export GRAPHITE_HOST=graphite.example.com
-export GRAFANA_HOST=grafana.example.com
-export GRAFANA_AUTH=your-grafana-api-token
-export SLACK_HOOK_URL=https://hooks.slack.com/services/...
-
-yarn sitespeed
+bash Sitespeed.io/run.sh
 ```
 
 HTML report is written to `sitespeed-result/` at the repo root.
+
+### What the run collects
+
+| Feature | Flag |
+|---------|------|
+| Video recording | `--video` |
+| Visual metrics (Speed Index, etc.) | `--visualMetrics` |
+| Perceptual / contentful Speed Index | `--visualMetricsPerceptual`, `--visualMetricsContentful` |
+| Element visual metrics | `--visualElements` |
+| Full filmstrip + frame diffs / heatmap | `--filmstrip.showAll`, `--videoParams.filmstripDiff` |
+| Accessibility (axe) | `--axe.enable` |
+| Sustainability / CO₂ | `--sustainable.enable` |
+| Third-party CPU breakdown | `--thirdParty.cpu` |
+| Extra Chrome profile + JS/CSS coverage | `--enableProfileRun`, `--chrome.coverage` |
+| Console + net logs, trace screenshots | `--chrome.collectConsoleLog`, `--chrome.collectNetLog`, `--chrome.enableTraceScreenshots` |
+| All waterfalls in HTML summary | `--html.showAllWaterfallSummary` |
+| Cable network throttling | `-c cable --connectivity.engine throttle` |
+
+Headless Chrome is **not** used: video and visual metrics need a real display
+(Docker provides XVFB).
 
 ## GitHub Actions
 

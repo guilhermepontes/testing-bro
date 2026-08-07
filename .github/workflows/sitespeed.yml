@@ -17,7 +17,7 @@ jobs:
   sitespeed:
     runs-on: ubuntu-latest
     environment: prd
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
